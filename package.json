@@ -1,0 +1,14 @@
+{
+  "name": "travian-elephant-finder",
+  "module": "main.ts",
+  "type": "module",
+  "scripts": {
+    "build": "bun build ./main.ts --outdir ./build"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
