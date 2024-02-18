@@ -23,12 +23,9 @@ var CONFIG = {
     y: 150,
   },
   searchRadius: 50,
-  types: [9, 15],
 };
 var results = [];
-var cropTilePattern = new RegExp(
-  `title="Crop"></i></td>\\s*<td class="val">(${CONFIG.types.join('|')})</td>`
-);
+var elephantPattern = new RegExp(`title=\"Elephant\"/></td>\n\\s*<td class=\"val\">(\\d+)</td>`);
 var promises = [];
 for (let r = 1; r <= CONFIG.searchRadius; r++) {
   for (let dx = -r; dx <= r; dx++) {
@@ -51,11 +48,11 @@ for (let r = 1; r <= CONFIG.searchRadius; r++) {
           }
         );
         const responseData = await response.json();
-        const match = cropTilePattern.exec(responseData.html);
+        const match = elephantPattern.exec(responseData.html);
         if (match) {
-          const size = match[1];
-          console.log(`${size}-cropper found at [${x}, ${y}]. Distance ${r}`);
-          results.push({ x, y, distance: r, size });
+          const elephants = match[1];
+          console.log(`${elephants} elephants found at [${x}, ${y}]. Distance ${r}`);
+          results.push({ x, y, distance: r, elephants: Number(elephants) });
         }
         resolve(null);
       });
@@ -68,7 +65,8 @@ for (let r = 1; r <= CONFIG.searchRadius; r++) {
   }
 }
 await Promise.all(promises);
-console.log(`${results.length} villages found.`, results);
+var total = results.reduce((acc, info) => acc + Number(info.elephants), 0);
+console.log(`${total} elephants found.`, results);
 ```
 
 ## Screenshots
@@ -78,8 +76,8 @@ console.log(`${results.length} villages found.`, results);
 ## Using locally
 
 ```
-git clone git@github.com:kaareloun/travian-crop-finder.git
-cd travian-crop-finder
+git clone git@github.com:kaareloun/travian-elephant-finder.git
+cd travian-elephant-finder
 echo "AUTH_COOKIE=cookie" > .env
 bun install
 bun run main.ts

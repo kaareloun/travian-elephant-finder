@@ -5,11 +5,10 @@ var CONFIG = {
     x: 150,
     y: 150
   },
-  searchRadius: 50,
-  animals: ["elephant"]
+  searchRadius: 50
 };
 var results = [];
-var animalPattern = new RegExp(`title="Crop"></i></td>\\s*<td class="val">(${CONFIG.animals.join("|")})</td>`);
+var elephantPattern = new RegExp(`title=\"Elephant\"/></td>\n\\s*<td class=\"val\">(\\d+)</td>`);
 var promises = [];
 for (let r = 1;r <= CONFIG.searchRadius; r++) {
   for (let dx = -r;dx <= r; dx++) {
@@ -29,11 +28,11 @@ for (let r = 1;r <= CONFIG.searchRadius; r++) {
           body: JSON.stringify({ x, y })
         });
         const responseData = await response.json();
-        const match = animalPattern.exec(responseData.html);
+        const match = elephantPattern.exec(responseData.html);
         if (match) {
-          const animal = match[1];
-          console.log(`${animal[0].toUpperCase()}${animal.slice(1)}s found at [${x}, ${y}]. Distance ${r}`);
-          results.push({ x, y, distance: r, animal });
+          const elephants = match[1];
+          console.log(`${elephants} elephants found at [${x}, ${y}]. Distance ${r}`);
+          results.push({ x, y, distance: r, elephants: Number(elephants) });
         }
         resolve(null);
       });
@@ -46,4 +45,5 @@ for (let r = 1;r <= CONFIG.searchRadius; r++) {
   }
 }
 await Promise.all(promises);
-console.log(`${results.length} animal locations found.`, results);
+var total = results.reduce((acc, info) => acc + Number(info.elephants), 0);
+console.log(`${total} elephants found.`, results);

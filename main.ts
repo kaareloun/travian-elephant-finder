@@ -1,4 +1,4 @@
-import { Animal, AnimalInfo, Config } from './types';
+import { AnimalInfo, Config } from './types';
 
 const CONFIG: Config = {
   server: 'ts1.x1.europe.travian.com',
@@ -7,13 +7,10 @@ const CONFIG: Config = {
     y: 150,
   },
   searchRadius: 50,
-  animals: ['elephant'], // rat, spider, snake, bat, boar, wolf, bear, crocodile, tiger, elephant
 };
 
 const results: AnimalInfo[] = [];
-const animalPattern = new RegExp(
-  `title="Crop"><\/i><\/td>\\s*<td class="val">(${CONFIG.animals.join('|')})<\/td>`
-);
+const elephantPattern = new RegExp(`title=\"Elephant\"/></td>\n\\s*<td class=\"val\">(\\d+)</td>`);
 
 let promises: Promise<any>[] = [];
 for (let r = 1; r <= CONFIG.searchRadius; r++) {
@@ -39,13 +36,11 @@ for (let r = 1; r <= CONFIG.searchRadius; r++) {
         );
 
         const responseData = await response.json();
-        const match = animalPattern.exec(responseData.html);
+        const match = elephantPattern.exec(responseData.html);
         if (match) {
-          const animal = match[1] as Animal;
-          console.log(
-            `${animal[0].toUpperCase()}${animal.slice(1)}s found at [${x}, ${y}]. Distance ${r}`
-          );
-          results.push({ x, y, distance: r, animal });
+          const elephants = match[1];
+          console.log(`${elephants} elephants found at [${x}, ${y}]. Distance ${r}`);
+          results.push({ x, y, distance: r, elephants: Number(elephants) });
         }
         resolve(null);
       });
@@ -61,4 +56,5 @@ for (let r = 1; r <= CONFIG.searchRadius; r++) {
 
 await Promise.all(promises);
 
-console.log(`${results.length} animal locations found.`, results);
+const total = results.reduce((acc, info) => acc + Number(info.elephants), 0);
+console.log(`${total} elephants found.`, results);
