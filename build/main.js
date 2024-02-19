@@ -5,10 +5,23 @@ var CONFIG = {
     x: 150,
     y: 150
   },
-  searchRadius: 50
+  searchRadius: 50,
+  cages: 22
 };
 var results = [];
-var elephantPattern = new RegExp(`title=\"Elephant\"/></td>\n\\s*<td class=\"val\">(\\d+)</td>`);
+var animalPattern = (animal) => new RegExp(`title=\"${animal}\"/></td>\n\\s*<td class=\"val\">(\\d+)</td>`);
+var ANIMALS = {
+  Rat: 25,
+  Spider: 35,
+  Snake: 40,
+  Bat: 66,
+  "Wild Boar": 70,
+  Wolf: 80,
+  Bear: 140,
+  Crocodile: 380,
+  Tiger: 170,
+  Elephant: 440
+};
 var promises = [];
 for (let r = 1;r <= CONFIG.searchRadius; r++) {
   for (let dx = -r;dx <= r; dx++) {
@@ -28,11 +41,34 @@ for (let r = 1;r <= CONFIG.searchRadius; r++) {
           body: JSON.stringify({ x, y })
         });
         const responseData = await response.json();
-        const match = elephantPattern.exec(responseData.html);
-        if (match) {
-          const elephants = match[1];
-          console.log(`${elephants} elephants found at [${x}, ${y}]. Distance ${r}`);
-          results.push({ x, y, distance: r, elephants: Number(elephants) });
+        const animalsArray = Object.keys(ANIMALS).reduce((acc, animal) => {
+          const match = animalPattern(animal).exec(responseData.html);
+          acc[animal] = match ? Array.from({ length: Number(match[1]) }) : [];
+          return acc;
+        }, {});
+        const elephantsArray = animalsArray["Elephant"] || [];
+        if (elephantsArray.length > 0) {
+          let score = 0;
+          let animalIndex = 0;
+          let cagesLeft = CONFIG.cages;
+          while (cagesLeft > 0) {
+            if (Object.keys(animalsArray).length === 0) {
+              break;
+            }
+            const animal = Object.keys(animalsArray)[animalIndex];
+            if (animalsArray[animal]?.length === 0) {
+              delete animalsArray[animal];
+              continue;
+            }
+            if ((animalsArray[animal]?.length || 0) > 0) {
+              score += ANIMALS[animal];
+              animalsArray[animal]?.pop();
+              cagesLeft--;
+            }
+            animalIndex = (animalIndex + 1) % Object.keys(animalsArray).length;
+          }
+          console.log(`Elephants found at [${x}, ${y}]. Distance: ${r}. Score: ${score}.`);
+          results.push({ x, y, distance: r, score });
         }
         resolve(null);
       });
@@ -45,5 +81,4 @@ for (let r = 1;r <= CONFIG.searchRadius; r++) {
   }
 }
 await Promise.all(promises);
-var total = results.reduce((acc, info) => acc + Number(info.elephants), 0);
-console.log(`${total} elephants found.`, results);
+console.log(`${results.length} oasis found.`, results.sort((a, b) => b.score - a.score));

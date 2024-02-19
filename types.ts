@@ -5,6 +5,7 @@ export type Config = {
     y: number;
   };
   searchRadius: number;
+  cages: number;
 };
 
-export type AnimalInfo = { x: number; y: number; distance: number; elephants: number };
+export type Oasis = { x: number; y: number; distance: number; score: number };
