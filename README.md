@@ -6,7 +6,7 @@ A script that automatically locates elephants around your village in the game Tr
 
 ### How cages work
 
-You capture nature troops in order of strength, so you will capture a rat, then a snake, then a bear, then a tiger, then a elephant if those were the animals in a oasis, and the cycle repeats until the hero runs out of cages. When you attack an oasis with a hero who has traps equipped, he will not fight the troops he doesn't capture.
+You capture nature troops in order of strength, so you will capture a rat, then a snake, then a bear, then a tiger, then an elephant if those were the animals in a oasis, and the cycle repeats until the hero runs out of cages. When you attack an oasis with a hero who has traps equipped, he will not fight the troops he doesn't capture.
 
 This script calculates the score of each oasis based on the animals in it. The score shows the total strength of the captured animals if you use all your cages. For best results, adjust your cages so the last captured animal is an elephant.
 
