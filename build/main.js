@@ -1,15 +1,15 @@
-// main.ts
+// config.ts
 var CONFIG = {
   server: "ts1.x1.europe.travian.com",
   village: {
     x: 150,
     y: 150
   },
-  searchRadius: 30,
+  searchRadius: 50,
   cages: 5
 };
-var results = [];
-var animalPattern = (animal) => new RegExp(`title=\"${animal}\"/></td>\n\\s*<td class=\"val\">(\\d+)</td>`);
+
+// constants.ts
 var ANIMALS = {
   Rat: 25,
   Spider: 35,
@@ -22,6 +22,10 @@ var ANIMALS = {
   Tiger: 170,
   Elephant: 440
 };
+
+// main.ts
+var results = [];
+var animalPattern = (animal) => new RegExp(`title=\"${animal}\"/></td>\n\\s*<td class=\"val\">(\\d+)</td>`);
 var promises = [];
 for (let r = 1;r <= CONFIG.searchRadius; r++) {
   for (let dx = -r;dx <= r; dx++) {
@@ -46,11 +50,11 @@ for (let r = 1;r <= CONFIG.searchRadius; r++) {
           acc[animal] = match ? Array.from({ length: Number(match[1]) }) : [];
           return acc;
         }, {});
-        const elephantsArray = animalsArray["Elephant"] || [];
-        if (elephantsArray.length > 0) {
+        if ((animalsArray["Elephant"] || []).length > 0) {
           let score = 0;
           let animalIndex = 0;
           let cagesLeft = CONFIG.cages;
+          const animalsCaught = new Set;
           while (cagesLeft > 0) {
             if (Object.keys(animalsArray).length === 0) {
               break;
@@ -63,12 +67,13 @@ for (let r = 1;r <= CONFIG.searchRadius; r++) {
             if ((animalsArray[animal]?.length || 0) > 0) {
               score += ANIMALS[animal];
               animalsArray[animal]?.pop();
+              animalsCaught.add(animal);
               cagesLeft--;
             }
             animalIndex = (animalIndex + 1) % Object.keys(animalsArray).length;
           }
-          console.log(`Elephants found at [${x}, ${y}]. Distance: ${r}. Score: ${score}.`);
-          results.push({ x, y, distance: r, score });
+          console.log(`${animalsCaught.size === 1 ? "\uD83D\uDC18\uD83D\uDC18\uD83D\uDC18" : "Elephants"} found at [${x}, ${y}]. Distance: ${r}. Score: ${score}.`);
+          results.push({ x, y, distance: r, animals: animalsCaught, score });
         }
         resolve(null);
       });

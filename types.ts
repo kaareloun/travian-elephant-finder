@@ -1,3 +1,5 @@
+import { ANIMALS } from './constants';
+
 export type Config = {
   server: string;
   village: {
@@ -8,4 +10,10 @@ export type Config = {
   cages: number;
 };
 
-export type Oasis = { x: number; y: number; distance: number; score: number };
+export type Oasis = {
+  x: number;
+  y: number;
+  distance: number;
+  animals: Set<keyof typeof ANIMALS>;
+  score: number;
+};
