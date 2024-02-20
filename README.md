@@ -22,8 +22,8 @@ var CONFIG = {
     x: 150,
     y: 150,
   },
-  searchRadius: 50,
-  cages: 22,
+  searchRadius: 30,
+  cages: 5,
 };
 var results = [];
 var animalPattern = (animal) =>
