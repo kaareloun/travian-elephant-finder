@@ -16,6 +16,8 @@ This script calculates the score of each oasis based on the animals in it. The s
 
 [🐘 Travian Elephant Finder](https://github.com/kaareloun/travian-elephant-finder)
 
+[🗺️ Travian Map Parser](https://github.com/kaareloun/travian-map-parser)
+
 ## How to use
 
 - Login to Travian (use alt account because you will get banned)
